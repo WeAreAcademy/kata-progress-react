@@ -22,10 +22,11 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     useEffect(() => {
         async function fetchAndSaveKatas() {
-            const katasRes = await fetch(`${apiBaseURL}/katas`);
-            const katasData = await katasRes.json();
-            const progressRes = await fetch(`${apiBaseURL}/user/${user.uid}/kata_progress`);
-            const progressData = await progressRes.json();
+            const headers = await createAuthHeaders(user);
+
+            const katasData = (await axios.get(`${apiBaseURL}/katas`)).data;
+            const progressRes = await axios.get(`${apiBaseURL}/user/${user.uid}/kata_progress`, { headers });
+            const progressData = progressRes.data;
             setKatas(katasData.data.katas);
             setKatasProgressData(progressData.data);
         }
@@ -42,10 +43,13 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
         })
     }
 
+    async function createAuthHeaders(u: User) {
+        return { "Authorization": "Bearer " + await u.getIdToken() }
+    }
 
     async function updateStatusOnKata(user_id: string, kata_id: string, newStatus: boolean) {
         console.log(`would update status on kata ${kata_id} for user: ${user_id}`)
-        const headers = { "Authorization": "Bearer " + await user.getIdToken() }
+        const headers = await createAuthHeaders(user);
         const url = `${apiBaseURL}/user/${user_id}/kata/${kata_id}/progress`
         const body = {
             user_id: user_id,
