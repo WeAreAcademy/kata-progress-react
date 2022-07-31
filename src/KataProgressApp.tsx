@@ -75,6 +75,15 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
         return { "Authorization": "Bearer " + await u.getIdToken() }
     }
 
+    function changeKataStatusLocally(update: { user_id: string, kata_id: string, is_done: boolean }): void {
+
+        const isTarget = (kp: KataProgressData) => kp.kata_id === update.kata_id && kp.user_id === update.user_id;
+        setKatasProgressData(prev => {
+            const newData = [...prev].map(kp => isTarget(kp) ? { ...kp, is_done: update.is_done } : kp);
+            return newData;
+        });
+    }
+
     async function updateStatusOnKata(user_id: string, kata_id: string, newStatus: boolean) {
         console.log(`would update status on kata ${kata_id} for user: ${user_id}`)
         const headers = await createAuthHeaders(user);
@@ -87,6 +96,7 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
         try {
             const res = await axios.post(url, body, { headers })
             if (res.status >= 200 && res.status < 400) {
+                changeKataStatusLocally(body);
                 toast({
                     title: 'Updated kata status',
                     description: "Now set to " + (newStatus ? "completed" : "not completed"),
@@ -94,7 +104,6 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                     duration: 2000,
                     isClosable: true,
                 })
-
             }
         } catch (err) {
 
