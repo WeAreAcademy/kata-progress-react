@@ -117,18 +117,19 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
                                 </Td>
                                 <Td>
                                     <Tooltip label={k.kata.name}>
-
                                         <Link
                                             // color="teal.500"
                                             href={k.kata.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
+                                            {/* truncation */}
                                             <Text noOfLines={1} maxW="lg">
                                                 {k.kata.name}
                                             </Text>
                                         </Link>
-                                    </Tooltip>                              </Td>
+                                    </Tooltip>
+                                </Td>
                             </Tr>
 
 
