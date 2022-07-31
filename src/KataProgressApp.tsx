@@ -12,6 +12,7 @@ interface KataProgressAppProps {
     user: User;
 }
 
+const apiBaseURL = "http://localhost:4000"
 export function KataProgressApp({ user }: KataProgressAppProps) {
     const [katas, setKatas] = useState<Kata[]>([]);
     const [katasProgressData, setKatasProgressData] = useState<KataProgressData[]>([]);
@@ -21,9 +22,9 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     useEffect(() => {
         async function fetchAndSaveKatas() {
-            const katasRes = await fetch("http://localhost:4000/katas");
+            const katasRes = await fetch(`${apiBaseURL}/katas`);
             const katasData = await katasRes.json();
-            const progressRes = await fetch(`http://localhost:4000/user/${user.uid}/kata_progress`);
+            const progressRes = await fetch(`${apiBaseURL}/user/${user.uid}/kata_progress`);
             const progressData = await progressRes.json();
             setKatas(katasData.data.katas);
             setKatasProgressData(progressData.data);
@@ -33,7 +34,6 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     const decoratedKatas: DecoratedKata[] = calcDecoratedKatas();
     function calcDecoratedKatas() {
-        console.log({ katasProgressData })
         return katas.map(k => {
             const progress = katasProgressData.find(pd => pd.kata_id === k.id)
             const dk: DecoratedKata = { kata: k, progress }
@@ -46,7 +46,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
     async function updateStatusOnKata(user_id: string, kata_id: string, newStatus: boolean) {
         console.log(`would update status on kata ${kata_id} for user: ${user_id}`)
         const headers = { "Authorization": "Bearer " + await user.getIdToken() }
-        const url = `http://localhost:4000/user/${user_id}/kata/${kata_id}/progress`
+        const url = `${apiBaseURL}/user/${user_id}/kata/${kata_id}/progress`
         const body = {
             user_id: user_id,
             kata_id: kata_id,
@@ -102,7 +102,6 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
                     <Thead>
                         <Tr>
                             <Th>difficulty</Th>
-                            <Th>status</Th>
                             <Th>My progress</Th>
                             <Th>Kata Title</Th>
 
@@ -116,9 +115,6 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
                                     {k.kata.difficulty}
                                 </Td>
                                 <Td>
-                                    {k.kata.status}
-                                </Td>
-                                <Td>
                                     <Checkbox
                                         onChange={(e) => updateStatusOnKata(user.uid, k.kata.id, e.target.checked)}
                                         isChecked={k.progress?.is_done}
@@ -126,7 +122,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
                                 </Td>
                                 <Td>
                                     <Link
-                                        color="teal.500"
+                                        // color="teal.500"
                                         href={k.kata.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
