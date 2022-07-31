@@ -6,32 +6,58 @@ import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { sortDecoratedKatas } from "./kataUtils";
 import { LoggedInUser } from "./LoggedInUser";
-import { DecoratedKata, Kata, KataProgressData } from "./types";
+import { DecoratedKata, Kata, KataProgressData, SimpleUser } from "./types";
 
 interface KataProgressAppProps {
     user: User;
+    isFaculty: boolean;
 }
 
 const apiBaseURL = "http://localhost:4000"
-export function KataProgressApp({ user }: KataProgressAppProps) {
+
+export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     const [katas, setKatas] = useState<Kata[]>([]);
     const [katasProgressData, setKatasProgressData] = useState<KataProgressData[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [users, setUsers] = useState<SimpleUser[]>([]);
+    const [selectedUser, setSelectedUser] = useState<SimpleUser | null>(null);
 
     const toast = useToast()
 
+    function handleSelectNewUser(id: string) {
+        const newUser = users.find(u => u.id === id);
+        console.log("setting new user: ", newUser, " given ", id)
+        setSelectedUser(newUser ?? null)
+    }
+
+
+    useEffect(() => {
+        async function fetchAndSaveUsers() {
+            if (!isFaculty) {
+                return;
+            }
+            const headers = await createAuthHeaders(user);
+            const usersData = (await axios.get(`${apiBaseURL}/users`, { headers })).data;
+            console.log("setting users: ", usersData.data.users)
+            setUsers(usersData.data.users);
+            setSelectedUser(usersData.data.users[0])
+        }
+        fetchAndSaveUsers();
+    }, [user, isFaculty])
+
     useEffect(() => {
         async function fetchAndSaveKatas() {
+            const uidToFetch = selectedUser?.id ?? user.uid;
             const headers = await createAuthHeaders(user);
-
             const katasData = (await axios.get(`${apiBaseURL}/katas`)).data;
-            const progressRes = await axios.get(`${apiBaseURL}/user/${user.uid}/kata_progress`, { headers });
+            const progressRes = await axios.get(`${apiBaseURL}/user/${uidToFetch}/kata_progress`, { headers });
             const progressData = progressRes.data;
             setKatas(katasData.data.katas);
             setKatasProgressData(progressData.data);
         }
+
         fetchAndSaveKatas();
-    }, [user]);
+    }, [user, selectedUser]);
 
     const decoratedKatas: DecoratedKata[] = calcDecoratedKatas();
     function calcDecoratedKatas() {
@@ -87,14 +113,27 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     return (
         <Box>
-            <div>Logged in as <LoggedInUser user={user} /></div>
-            <div>You have recorded {countOfDoneKatas} as done</div>
+            <LoggedInUser user={user} isFaculty={isFaculty} />
+            {selectedUser && <Text>Looking at progress for {selectedUser.display_name} - {selectedUser.email}</Text>}
+            <Text>{countOfDoneKatas} katas recorded as done</Text>
             <Input
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 placeholder='search here...'
                 size='sm'
             />
+            {
+                isFaculty &&
+                <select onChange={(e) => handleSelectNewUser(e.target.value)}>
+                    {users.map(u =>
+                        <option
+                            key={u.id}
+                            value={u.id}
+                        >
+                            {u.display_name} - {u.email}
+                        </option>)}
+                </select>
+            }
             <TableContainer>
                 <Table >
                     <TableCaption>Kata Progress</TableCaption>

@@ -14,9 +14,20 @@ const auth = getAuth(app);
 
 export const App = () => {
   const [user, setUser] = React.useState<User | null>(null)
+  const [isFaculty, setIsFaculty] = React.useState(false)
   useEffect(() => {
-    const desub = auth.onAuthStateChanged((u) => {
+    const desub = auth.onAuthStateChanged(async (u) => {
       setUser(u);
+
+      if (u) {
+        const token = await u.getIdTokenResult();
+        //Firebase types think this value isn't boolean but string | undefined | null
+        //@ts-ignore
+        const isF = token.claims['faculty'] === true;
+        setIsFaculty(isF);
+      } else {
+        setIsFaculty(false);
+      }
     })
     return desub;
   }, []);
@@ -37,7 +48,7 @@ export const App = () => {
       <Grid minH="100vh" p={3}>
         <ColorModeSwitcher justifySelf="flex-end" />
 
-        {user && <KataProgressApp user={user} />}
+        {user && <KataProgressApp user={user} isFaculty={isFaculty} />}
 
       </Grid>
     </Box>

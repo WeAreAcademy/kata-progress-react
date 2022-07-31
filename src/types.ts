@@ -21,3 +21,9 @@ export interface KataProgressData {
   is_done: boolean;
   is_stuck: boolean;
 }
+
+export interface SimpleUser {
+  id: string;
+  display_name: string;
+  email: string;
+}
