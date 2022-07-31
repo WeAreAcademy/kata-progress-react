@@ -6,7 +6,7 @@ import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { sortDecoratedKatas } from "./kataUtils";
 import { LoggedInUser } from "./LoggedInUser";
-import { DecoratedKata, Kata, KataProgressData, SimpleUser } from "./types";
+import { DecoratedKata, Kata, KataProgressData, SimpleUserWithCounts } from "./types";
 
 interface KataProgressAppProps {
     user: User;
@@ -22,8 +22,8 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     const [katas, setKatas] = useState<Kata[]>([]);
     const [katasProgressData, setKatasProgressData] = useState<KataProgressData[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [users, setUsers] = useState<SimpleUser[]>([]);
-    const [selectedUser, setSelectedUser] = useState<SimpleUser | null>(null);
+    const [users, setUsers] = useState<SimpleUserWithCounts[]>([]);
+    const [selectedUser, setSelectedUser] = useState<SimpleUserWithCounts | null>(null);
 
     const toast = useToast()
 
@@ -33,14 +33,13 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
         setSelectedUser(newUser ?? null)
     }
 
-
     useEffect(() => {
         async function fetchAndSaveUsers() {
             if (!isFaculty) {
                 return;
             }
             const headers = await createAuthHeaders(user);
-            const usersData = (await axios.get(`${apiBaseURL}/users`, { headers })).data;
+            const usersData = (await axios.get(`${apiBaseURL}/users_with_counts`, { headers })).data;
             console.log("setting users: ", usersData.data.users)
             setUsers(usersData.data.users);
             setSelectedUser(usersData.data.users[0])
@@ -133,7 +132,7 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                             key={u.id}
                             value={u.id}
                         >
-                            {u.display_name} - {u.email}
+                            {u.display_name} - ({u.number_of_katas}) - {u.email}
                         </option>)}
                 </select>
             }

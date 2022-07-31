@@ -27,3 +27,6 @@ export interface SimpleUser {
   display_name: string;
   email: string;
 }
+export interface SimpleUserWithCounts extends SimpleUser {
+  number_of_katas: number;
+}
