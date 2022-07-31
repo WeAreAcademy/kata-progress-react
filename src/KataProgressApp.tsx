@@ -5,29 +5,8 @@ import {
 import { User } from "firebase/auth"
 import { useEffect, useState } from "react";
 import axios from "axios"
-interface Kata {
-    id: string;
-    url: string;
-    name: string;
-    status?: string;
-    difficulty?: string;
-    createdTime?: string;
-    lastEditedTime?: string;
-}
-interface DecoratedKata {
-    kata: Kata;
-    progress?: KataProgress;
-}
-interface KataProgress {
-    is_done: boolean;
-    is_stuck: boolean;
-}
-interface KataProgressData {
-    kata_id: string;
-    user_id: string;
-    is_done: boolean;
-    is_stuck: boolean;
-}
+import { sortDecoratedKatas } from "./kataUtils";
+import { Kata, KataProgressData, DecoratedKata } from "./types";
 
 interface KataProgressAppProps {
     user: User;
@@ -99,33 +78,6 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     }
 
-    function sortDecoratedKatas(ks: DecoratedKata[]): DecoratedKata[] {
-        function compareTitles(a: DecoratedKata, b: DecoratedKata): -1 | 1 | 0 {
-            const an = a.kata.name.toLowerCase();
-            const bn = b.kata.name.toLowerCase();
-            if (an < bn) {
-                return -1;
-            }
-            if (an > bn) {
-                return 1;
-            }
-            return 0;
-        }
-        function compareDifficulties(a: DecoratedKata, b: DecoratedKata): -1 | 1 | 0 {
-            const da = parseInt((a.kata.difficulty ?? "0").split(" ")[0]);
-            const db = parseInt((b.kata.difficulty ?? "0").split(" ")[0]);
-
-            if (da < db) {
-                return -1;
-            }
-            if (da > db) {
-                return 1;
-            }
-            return compareTitles(a, b)
-        }
-        return [...ks].sort(compareDifficulties)
-
-    }
     const decoratedKatasToShow = sortDecoratedKatas(decoratedKatas.filter(k => k.kata.status !== "not ready").filter(k => k.kata.name.toLowerCase().includes(searchTerm.toLowerCase())))
     const countOfDoneKatas = decoratedKatas.filter(dk => dk.progress?.is_done).length;
 

@@ -1,0 +1,23 @@
+export interface Kata {
+  id: string;
+  url: string;
+  name: string;
+  status?: string;
+  difficulty?: string;
+  createdTime?: string;
+  lastEditedTime?: string;
+}
+export interface DecoratedKata {
+  kata: Kata;
+  progress?: KataProgress;
+}
+export interface KataProgress {
+  is_done: boolean;
+  is_stuck: boolean;
+}
+export interface KataProgressData {
+  kata_id: string;
+  user_id: string;
+  is_done: boolean;
+  is_stuck: boolean;
+}
