@@ -63,6 +63,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
         })
     }
 
+
     async function updateStatusOnKata(user_id: string, kata_id: string, newStatus: boolean) {
         console.log(`would update status on kata ${kata_id} for user: ${user_id}`)
         const headers = { "Authorization": "Bearer " + await user.getIdToken() }
@@ -72,7 +73,6 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
             kata_id: kata_id,
             is_done: newStatus
         }
-        console.log({ headers })
         try {
             const res = await axios.post(url, body, { headers })
             if (res.status >= 200 && res.status < 400) {
@@ -127,7 +127,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     }
     const decoratedKatasToShow = sortDecoratedKatas(decoratedKatas.filter(k => k.kata.status !== "not ready").filter(k => k.kata.name.toLowerCase().includes(searchTerm.toLowerCase())))
-
+    const countOfDoneKatas = decoratedKatas.filter(dk => dk.progress?.is_done).length;
 
     return (
         <Box>
@@ -137,6 +137,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
                     alt={"profile of " + user.displayName}
                 />
             }</div>
+            <div>You have recorded {countOfDoneKatas} as done</div>
             <Input
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
