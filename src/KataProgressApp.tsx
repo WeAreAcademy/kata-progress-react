@@ -61,12 +61,10 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
         fetchAndSaveKatas();
     }, [user, selectedUser]);
 
-    const decoratedKatas: DecoratedKata[] = calcDecoratedKatas();
     function calcDecoratedKatas() {
         return katas.map(k => {
             const progress = katasProgressData.find(pd => pd.kata_id === k.id)
             const dk: DecoratedKata = { kata: k, progress }
-            dk.progress = progress;
             return dk;
         })
     }
@@ -119,13 +117,14 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
 
     }
 
+    const decoratedKatas: DecoratedKata[] = calcDecoratedKatas();
     const decoratedKatasToShow = sortDecoratedKatas(decoratedKatas.filter(k => k.kata.status !== "not ready").filter(k => k.kata.name.toLowerCase().includes(searchTerm.toLowerCase())))
     const countOfDoneKatas = decoratedKatas.filter(dk => dk.progress?.is_done).length;
 
     return (
         <Box>
             <LoggedInUser user={user} isFaculty={isFaculty} />
-            {selectedUser && <Text>Looking at progress for {selectedUser.display_name} - {selectedUser.email}</Text>}
+            {selectedUser && <Text>Looking at progress for {selectedUser.display_name} - {selectedUser.email} - {selectedUser.id}</Text>}
             <Text>{countOfDoneKatas} katas recorded as done</Text>
             <Input
                 value={searchTerm}
@@ -157,29 +156,29 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {decoratedKatasToShow.map(k => (
-                            <Tr key={k.kata.id}>
+                        {decoratedKatasToShow.map(dk => (
+                            <Tr key={dk.kata.id}>
 
                                 <Td>
-                                    {k.kata.difficulty}
+                                    {dk.kata.difficulty}
                                 </Td>
                                 <Td>
                                     <Checkbox
-                                        onChange={(e) => updateStatusOnKata(user.uid, k.kata.id, e.target.checked)}
-                                        isChecked={k.progress?.is_done}
+                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, e.target.checked)}
+                                        isChecked={dk.progress?.is_done}
                                     >done</Checkbox>
                                 </Td>
                                 <Td>
-                                    <Tooltip label={k.kata.name}>
+                                    <Tooltip label={dk.kata.name}>
                                         <Link
                                             // color="teal.500"
-                                            href={k.kata.url}
+                                            href={dk.kata.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
                                             {/* truncation */}
                                             <Text noOfLines={1} maxW="lg">
-                                                {k.kata.name}
+                                                {dk.kata.name}
                                             </Text>
                                         </Link>
                                     </Tooltip>
