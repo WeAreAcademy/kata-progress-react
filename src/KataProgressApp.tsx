@@ -13,7 +13,10 @@ interface KataProgressAppProps {
     isFaculty: boolean;
 }
 
-const apiBaseURL = "http://localhost:4000"
+const apiBaseURL = process.env.NODE_ENV === "production"
+    ? "https://academy-kata-progress.herokuapp.com"
+    : "http://localhost:4000"
+
 
 export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     const [katas, setKatas] = useState<Kata[]>([]);
