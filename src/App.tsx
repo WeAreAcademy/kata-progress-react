@@ -1,11 +1,12 @@
 import {
-  Box, ChakraProvider, Grid,
+  Box, Button, ChakraProvider, Grid,
   Heading, theme
 } from "@chakra-ui/react";
+
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { KataProgressApp } from "./KataProgressApp";
 
-import { getAuth, GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, User } from "firebase/auth";
 import React, { useEffect } from "react";
 import { app } from "./configFirebase";
 
@@ -24,11 +25,15 @@ export const App = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(getAuth(), provider)
   }
+  function handleLogOutClick() {
+    signOut(getAuth());
+  }
 
   return (<ChakraProvider theme={theme}>
     <Box textAlign="center" fontSize="xl">
       <Heading>Kata Progress</Heading>
-      {!user && <button onClick={handleLogInClick}>Log in with google</button>}
+      {!user && <Button onClick={handleLogInClick}>Log in with google</Button>}
+      {user && <Button onClick={handleLogOutClick}>Log out</Button>}
       <Grid minH="100vh" p={3}>
         <ColorModeSwitcher justifySelf="flex-end" />
 
