@@ -1,12 +1,12 @@
 import {
     Box,
-    Checkbox, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, useToast
+    Checkbox, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useToast
 } from "@chakra-ui/react";
-import { User } from "firebase/auth"
+import axios from "axios";
+import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
-import axios from "axios"
 import { sortDecoratedKatas } from "./kataUtils";
-import { Kata, KataProgressData, DecoratedKata } from "./types";
+import { DecoratedKata, Kata, KataProgressData } from "./types";
 
 interface KataProgressAppProps {
     user: User;
@@ -83,6 +83,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     return (
         <Box>
+            <Text>Kata Progress</Text>
             <div>Logged in as {user.displayName} - {user.email} ({user.uid}) {
                 user.photoURL && <img
                     src={user.photoURL}
