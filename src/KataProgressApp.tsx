@@ -1,11 +1,11 @@
 import {
-    Box,
-    Checkbox, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useToast
+    Box, Checkbox, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useToast
 } from "@chakra-ui/react";
 import axios from "axios";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { sortDecoratedKatas } from "./kataUtils";
+import { LoggedInUser } from "./LoggedInUser";
 import { DecoratedKata, Kata, KataProgressData } from "./types";
 
 interface KataProgressAppProps {
@@ -83,13 +83,7 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
 
     return (
         <Box>
-            <Text>Kata Progress</Text>
-            <div>Logged in as {user.displayName} - {user.email} ({user.uid}) {
-                user.photoURL && <img
-                    src={user.photoURL}
-                    alt={"profile of " + user.displayName}
-                />
-            }</div>
+            <div>Logged in as <LoggedInUser user={user} /></div>
             <div>You have recorded {countOfDoneKatas} as done</div>
             <Input
                 value={searchTerm}
@@ -122,14 +116,19 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
                                     >done</Checkbox>
                                 </Td>
                                 <Td>
-                                    <Link
-                                        // color="teal.500"
-                                        href={k.kata.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >{k.kata.name}
-                                    </Link>
-                                </Td>
+                                    <Tooltip label={k.kata.name}>
+
+                                        <Link
+                                            // color="teal.500"
+                                            href={k.kata.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Text noOfLines={1} maxW="lg">
+                                                {k.kata.name}
+                                            </Text>
+                                        </Link>
+                                    </Tooltip>                              </Td>
                             </Tr>
 
 
@@ -142,4 +141,5 @@ export function KataProgressApp({ user }: KataProgressAppProps) {
         </Box >
     )
 }
+
 
