@@ -1,6 +1,6 @@
 import {
   Box, ChakraProvider, Grid,
-  theme
+  Heading, theme
 } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { KataProgressApp } from "./KataProgressApp";
@@ -27,6 +27,7 @@ export const App = () => {
 
   return (<ChakraProvider theme={theme}>
     <Box textAlign="center" fontSize="xl">
+      <Heading>Kata Progress</Heading>
       {!user && <button onClick={handleLogInClick}>Log in with google</button>}
       <Grid minH="100vh" p={3}>
         <ColorModeSwitcher justifySelf="flex-end" />
