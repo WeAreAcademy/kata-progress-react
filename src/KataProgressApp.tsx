@@ -6,7 +6,7 @@ import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { sortDecoratedKatas } from "./kataUtils";
 import { LoggedInUser } from "./LoggedInUser";
-import { DecoratedKata, Kata, KataProgressData, SimpleUserWithCounts } from "./types";
+import { DecoratedKata, IStatusChange, Kata, KataProgressData, SimpleUserWithCounts } from "./types";
 
 interface KataProgressAppProps {
     user: User;
@@ -48,17 +48,17 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     }, [user, isFaculty])
 
     useEffect(() => {
-        async function fetchAndSaveKatas() {
+        async function fetchAndSaveKatasAndTheirProgress() {
             const uidToFetch = selectedUser?.id ?? user.uid;
             const headers = await createAuthHeaders(user);
-            const katasData = (await axios.get(`${apiBaseURL}/katas`)).data;
+            const katasReceived = (await axios.get(`${apiBaseURL}/katas`)).data;
             const progressRes = await axios.get(`${apiBaseURL}/user/${uidToFetch}/kata_progress`, { headers });
-            const progressData = progressRes.data;
-            setKatas(katasData.data.katas);
-            setKatasProgressData(progressData.data);
+            const progressReceived = progressRes.data;
+            setKatas(katasReceived.data.katas);
+            setKatasProgressData(progressReceived.data);
         }
 
-        fetchAndSaveKatas();
+        fetchAndSaveKatasAndTheirProgress();
     }, [user, selectedUser]);
 
     function calcDecoratedKatas() {
@@ -73,31 +73,41 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
         return { "Authorization": "Bearer " + await u.getIdToken() }
     }
 
-    function changeKataStatusLocally(update: { user_id: string, kata_id: string, is_done: boolean }): void {
-
-        const isTarget = (kp: KataProgressData) => kp.kata_id === update.kata_id && kp.user_id === update.user_id;
+    /** Tries to anticipate what the server might do. Bad idea. */
+    function changeKataStatusLocallyWithDBReturnedValue(newRowFromDB: KataProgressData): void {
+        const isTarget = (kp: KataProgressData) =>
+            kp.kata_id === newRowFromDB.kata_id && kp.user_id === newRowFromDB.user_id;
         setKatasProgressData(prev => {
-            const newData = [...prev].map(kp => isTarget(kp) ? { ...kp, is_done: update.is_done } : kp);
-            return newData;
+
+            if (prev.find(isTarget)) {
+                return [...prev].map(kp =>
+                    isTarget(kp) ?
+                        newRowFromDB :
+                        kp);
+            } else {
+                return [...prev, newRowFromDB]
+            }
         });
     }
 
-    async function updateStatusOnKata(user_id: string, kata_id: string, newStatus: boolean) {
+    async function updateStatusOnKata(user_id: string, kata_id: string, statusChange: IStatusChange) {
         console.log(`would update status on kata ${kata_id} for user: ${user_id}`)
         const headers = await createAuthHeaders(user);
         const url = `${apiBaseURL}/user/${user_id}/kata/${kata_id}/progress`
         const body = {
             user_id: user_id,
             kata_id: kata_id,
-            is_done: newStatus
+            statusChange
         }
         try {
             const res = await axios.post(url, body, { headers })
             if (res.status >= 200 && res.status < 400) {
-                changeKataStatusLocally(body);
+                //TODO: better just to queue a new fetch, though expensive
+                const returnedKataProgressDataRow: KataProgressData = res.data.data;
+                changeKataStatusLocallyWithDBReturnedValue(returnedKataProgressDataRow);
                 toast({
                     title: 'Updated kata status',
-                    description: "Now set to " + (newStatus ? "completed" : "not completed"),
+                    description: "Now set to " + JSON.stringify(statusChange),
                     status: 'success',
                     duration: 2000,
                     isClosable: true,
@@ -164,9 +174,13 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                                 </Td>
                                 <Td>
                                     <Checkbox
-                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, e.target.checked)}
-                                        isChecked={dk.progress?.is_done}
+                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isDone: e.target.checked })}
+                                        isChecked={dk.progress ? dk.progress.is_done : false}
                                     >done</Checkbox>
+                                    <Checkbox
+                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isStuck: e.target.checked })}
+                                        isChecked={dk.progress ? dk.progress.is_stuck : false}
+                                    >stuck</Checkbox>
                                 </Td>
                                 <Td>
                                     <Tooltip label={dk.kata.name}>

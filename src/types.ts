@@ -30,3 +30,8 @@ export interface SimpleUser {
 export interface SimpleUserWithCounts extends SimpleUser {
   number_of_katas: number;
 }
+
+export interface IStatusChange {
+  isDone?: boolean;
+  isStuck?: boolean;
+}
