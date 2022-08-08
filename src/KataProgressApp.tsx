@@ -1,5 +1,5 @@
 import {
-    Box, Checkbox, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useToast
+    Box, Checkbox, HStack, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useToast
 } from "@chakra-ui/react";
 import axios from "axios";
 import { User } from "firebase/auth";
@@ -159,9 +159,9 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                     <TableCaption>Kata Progress</TableCaption>
                     <Thead>
                         <Tr>
-                            <Th>difficulty</Th>
-                            <Th>My progress</Th>
                             <Th>Kata Title</Th>
+                            <Th>My progress</Th>
+                            <Th>Difficulty</Th>
 
                         </Tr>
                     </Thead>
@@ -169,23 +169,7 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                         {decoratedKatasToShow.map(dk => (
                             <Tr key={dk.kata.id}>
 
-                                <Td>
-                                    {dk.kata.difficulty}
-                                </Td>
-                                <Td>
-                                    <Checkbox
-                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isDone: e.target.checked })}
-                                        isChecked={dk.progress ? dk.progress.is_done : false}
-                                    >done</Checkbox>
-                                    <Checkbox
-                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isInProgress: e.target.checked })}
-                                        isChecked={dk.progress ? dk.progress.is_in_progress : false}
-                                    >in progress</Checkbox>
-                                    <Checkbox
-                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isStuck: e.target.checked })}
-                                        isChecked={dk.progress ? dk.progress.is_stuck : false}
-                                    >stuck</Checkbox>
-                                </Td>
+
                                 <Td>
                                     <Tooltip label={dk.kata.name}>
                                         <Link
@@ -200,6 +184,25 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                                             </Text>
                                         </Link>
                                     </Tooltip>
+                                </Td>
+                                <Td>
+                                    <HStack>
+                                        <Checkbox
+                                            onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isDone: e.target.checked })}
+                                            isChecked={dk.progress ? dk.progress.is_done : false}
+                                        >done</Checkbox>
+                                        <Checkbox
+                                            onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isInProgress: e.target.checked })}
+                                            isChecked={dk.progress ? dk.progress.is_in_progress : false}
+                                        >in progress</Checkbox>
+                                        <Checkbox
+                                            onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isStuck: e.target.checked })}
+                                            isChecked={dk.progress ? dk.progress.is_stuck : false}
+                                        >stuck</Checkbox>
+                                    </HStack>
+                                </Td>
+                                <Td>
+                                    {dk.kata.difficulty}
                                 </Td>
                             </Tr>
 
