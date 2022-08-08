@@ -14,12 +14,14 @@ export interface DecoratedKata {
 export interface KataProgress {
   is_done: boolean;
   is_stuck: boolean;
+  is_in_progress: boolean;
 }
 export interface KataProgressData {
   kata_id: string;
   user_id: string;
   is_done: boolean;
   is_stuck: boolean;
+  is_in_progress: boolean;
 }
 
 export interface SimpleUser {
@@ -34,4 +36,5 @@ export interface SimpleUserWithCounts extends SimpleUser {
 export interface IStatusChange {
   isDone?: boolean;
   isStuck?: boolean;
+  isInProgress?: boolean;
 }

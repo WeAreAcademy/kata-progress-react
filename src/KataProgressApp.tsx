@@ -178,6 +178,10 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                                         isChecked={dk.progress ? dk.progress.is_done : false}
                                     >done</Checkbox>
                                     <Checkbox
+                                        onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isInProgress: e.target.checked })}
+                                        isChecked={dk.progress ? dk.progress.is_in_progress : false}
+                                    >in progress</Checkbox>
+                                    <Checkbox
                                         onChange={(e) => updateStatusOnKata(user.uid, dk.kata.id, { isStuck: e.target.checked })}
                                         isChecked={dk.progress ? dk.progress.is_stuck : false}
                                     >stuck</Checkbox>
