@@ -8,7 +8,7 @@ interface LoggedInUserProps {
 
 export function LoggedInUser({ user, isFaculty }: LoggedInUserProps) {
 
-    return (<Flex>
+    return (<Flex justify="flex-end" >
         {/* <Avatar src='https://bit.ly/sage-adebayo' /> */}
         {user.photoURL && <Image
             boxSize='64px'
