@@ -91,7 +91,7 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     }
 
     async function updateStatusOnKata(user_id: string, kata_id: string, statusChange: IStatusChange) {
-        console.log(`would update status on kata ${kata_id} for user: ${user_id}`)
+        console.log(`would update status on kata ${kata_id} for user: ${user_id}`, { statusChange })
         const headers = await createAuthHeaders(user);
         const url = `${apiBaseURL}/user/${user_id}/kata/${kata_id}/progress`
         const body = {
