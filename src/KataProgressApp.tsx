@@ -4,6 +4,7 @@ import {
 import axios from "axios";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { AllKatasWithCompletersView } from "./AllKatasWithCompletersView";
 import { apiBaseURL, createAuthHeaders } from "./APIUtils";
 import { InProgressKatasView } from "./InProgressKatasView";
 import { sortDecoratedKatas } from "./kataUtils";
@@ -136,6 +137,14 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                 <Box>
                     <Heading>In-progress katas table</Heading>
                     <InProgressKatasView loggedInUser={user} />
+                </Box>
+            }
+
+            {
+                isFaculty &&
+                <Box>
+                    <Heading>All katas, with completers table</Heading>
+                    <AllKatasWithCompletersView loggedInUser={user} />
                 </Box>
             }
 

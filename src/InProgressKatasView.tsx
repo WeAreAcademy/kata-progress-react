@@ -1,8 +1,9 @@
-import { Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
+import { Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
 import axios from "axios";
 import { User } from "firebase/auth";
 import React, { useEffect } from "react";
 import { apiBaseURL, createAuthHeaders } from "./APIUtils";
+import { KataTitle } from "./KataTitle";
 import { Kata, SimpleUser } from "./types";
 
 
@@ -43,8 +44,7 @@ export function InProgressKatasView(props: InProgressKatasViewProps) {
                 </Thead>
                 <Tbody>
                     {inProgressKatas.map(ipk => (
-                        <Tr key={ipk.kata.id}>
-
+                        <Tr key={ipk.kata.id + "_" + ipk.user.id}>
 
                             <Td>
                                 <Tooltip label={ipk.user.email}>
@@ -71,30 +71,6 @@ export function InProgressKatasView(props: InProgressKatasViewProps) {
     )
 }
 
-/** 
-
-*/
-interface KataTitleProps {
-    kata: Kata
-}
-
-function KataTitle({ kata }: KataTitleProps) {
-    return (
-        <Tooltip label={kata.name}>
-            <Link
-                // color="teal.500"
-                href={kata.url}
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                {/* Truncation */}
-                <Text noOfLines={1} maxW="lg">
-                    {kata.name}
-                </Text>
-            </Link>
-        </Tooltip>
-    )
-}
 
 /** split out a db row data of key-value pairs where keys are user_blah1, user_blah2, kata_blah3 
  * into an object with two collected user and kata object. */
