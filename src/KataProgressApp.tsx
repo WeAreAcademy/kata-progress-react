@@ -1,9 +1,11 @@
 import {
-    Box, Checkbox, HStack, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useToast
+    Box, Checkbox, Heading, HStack, Input, Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useToast
 } from "@chakra-ui/react";
 import axios from "axios";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { apiBaseURL, createAuthHeaders } from "./APIUtils";
+import { InProgressKatasView } from "./InProgressKatasView";
 import { sortDecoratedKatas } from "./kataUtils";
 import { LoggedInUser } from "./LoggedInUser";
 import { DecoratedKata, IStatusChange, Kata, KataProgressData, SimpleUserWithCounts } from "./types";
@@ -12,10 +14,6 @@ interface KataProgressAppProps {
     user: User;
     isFaculty: boolean;
 }
-
-const apiBaseURL = process.env.NODE_ENV === "production"
-    ? "https://academy-kata-progress.herokuapp.com"
-    : "http://localhost:4000"
 
 
 export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
@@ -69,9 +67,6 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
         })
     }
 
-    async function createAuthHeaders(u: User) {
-        return { "Authorization": "Bearer " + await u.getIdToken() }
-    }
 
     /** Tries to anticipate what the server might do. Bad idea. */
     function changeKataStatusLocallyWithDBReturnedValue(newRowFromDB: KataProgressData): void {
@@ -134,7 +129,17 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     return (
         <Box>
             <LoggedInUser user={user} isFaculty={isFaculty} />
-            {selectedUser && <Text>Looking at progress for {selectedUser.display_name} - {selectedUser.email} - {selectedUser.id}</Text>}
+
+
+            {
+                isFaculty &&
+                <Box>
+                    <Heading>In-progress katas table</Heading>
+                    <InProgressKatasView loggedInUser={user} />
+                </Box>
+            }
+
+            {selectedUser && <Box><Heading>progress for {selectedUser.display_name}</Heading><Text>{selectedUser.email} - {selectedUser.id}</Text></Box>}
             <Text>{countOfDoneKatas} katas recorded as done</Text>
             <Input
                 value={searchTerm}
@@ -154,6 +159,7 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                         </option>)}
                 </select>
             }
+            <Heading>Kata Progress Table</Heading>
             <TableContainer>
                 <Table >
                     <TableCaption>Kata Progress</TableCaption>
