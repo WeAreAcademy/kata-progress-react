@@ -1,4 +1,4 @@
-import { Text, TableContainer, Table, TableCaption, Thead, Tr, Th, Tbody, Td, Tooltip, Link, HStack, Checkbox } from "@chakra-ui/react";
+import { Link, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from "@chakra-ui/react";
 import axios from "axios";
 import { User } from "firebase/auth";
 import React, { useEffect } from "react";
@@ -28,7 +28,7 @@ export function InProgressKatasView(props: InProgressKatasViewProps) {
         }
 
         fetchAndStoreInProgressKatas();
-    }, []);
+    }, [props.loggedInUser]);
 
     return (
         <TableContainer>
