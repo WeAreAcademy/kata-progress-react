@@ -2,7 +2,7 @@
     "name": "kata-progress-react",
     "version": "0.1.0",
     "private": true,
-    "dependencies": {
+    "devDependencies": {
         "@chakra-ui/react": "^2.2.4",
         "@emotion/react": "^11.0.0",
         "@emotion/styled": "^11.0.0",
@@ -16,6 +16,7 @@
         "axios": "^0.27.2",
         "firebase": "^9.9.1",
         "framer-motion": "^6.2.9",
+        "prettier": "^3.0.0",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
         "react-icons": "^3.0.0",
@@ -27,7 +28,8 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "format": "prettier --write src"
     },
     "eslintConfig": {
         "extends": "react-app"
