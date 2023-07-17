@@ -177,21 +177,18 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
     return (
         <Box>
             <LoggedInUser user={user} isFaculty={isFaculty} />
-
             {isFaculty && (
                 <Box>
                     <Heading>In-progress katas table</Heading>
                     <InProgressKatasView loggedInUser={user} />
                 </Box>
             )}
-
             {isFaculty && (
                 <Box>
                     <Heading>All katas, with completers table</Heading>
                     <AllKatasWithCompletersView loggedInUser={user} />
                 </Box>
             )}
-
             {selectedUser && (
                 <Box>
                     <Heading>progress for {selectedUser.display_name}</Heading>
@@ -309,6 +306,7 @@ export function KataProgressApp({ user, isFaculty }: KataProgressAppProps) {
                     </Tbody>
                 </Table>
             </TableContainer>
+            {decoratedKatas.length} kata(s) shown.
         </Box>
     );
 }
