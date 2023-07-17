@@ -16,8 +16,8 @@ export function sortDecoratedKatas(ks: DecoratedKata[]): DecoratedKata[] {
         a: DecoratedKata,
         b: DecoratedKata
     ): -1 | 1 | 0 {
-        const da = parseInt((a.kata.difficulty ?? "0").split(" ")[0]);
-        const db = parseInt((b.kata.difficulty ?? "0").split(" ")[0]);
+        const da = parseInt((a.kata.difficulty ?? "999").split(" ")[0]);
+        const db = parseInt((b.kata.difficulty ?? "999").split(" ")[0]);
 
         if (da < db) {
             return -1;
