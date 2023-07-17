@@ -1,8 +1,8 @@
-import { Text, Tooltip, Link } from "@chakra-ui/react"
-import { Kata } from "./types"
+import { Text, Tooltip, Link } from "@chakra-ui/react";
+import { Kata } from "./types";
 
 interface KataTitleProps {
-    kata: Kata
+    kata: Kata;
 }
 
 export function KataTitle({ kata }: KataTitleProps) {
@@ -20,5 +20,5 @@ export function KataTitle({ kata }: KataTitleProps) {
                 </Text>
             </Link>
         </Tooltip>
-    )
+    );
 }
